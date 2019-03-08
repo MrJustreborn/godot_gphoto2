@@ -1,3 +1,5 @@
 .vscode/
 godot/
-src/*.o
+*/**/src/*.o
+*/**/src/*.os
+*/**/*.dblite
