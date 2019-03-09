@@ -14,20 +14,34 @@ namespace godot {
             GodotPhoto();
             ~GodotPhoto();
 
-            Array test();
-            Ref<Image> getImg();
+            Array get_connected_cameras();
+
+            Ref<Image> capture_preview(int ptr);
+            Ref<Image> capture(int ptr);
+
             void clean();
         
         private:
+            int lastId;
+
             GPContext *context;
             CameraList	*list;
+            Camera	*camera;
+
+            CameraAbilitiesList	*abilities;
+            GPPortInfoList *portinfolist;
 
             Ref<Image> lastImage;
+
+            int open_camera(Camera ** camera, const char *model, const char *port, GPContext *context);
+            void capture_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size);
+            void capture_preview_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size);
         
         public:
             static void _register_methods() {
-                register_method("test", &GodotPhoto::test);
-                register_method("getImg", &GodotPhoto::getImg);
+                register_method("get_connected_cameras", &GodotPhoto::get_connected_cameras);
+                register_method("capture_preview", &GodotPhoto::capture_preview);
+                register_method("capture", &GodotPhoto::capture);
                 register_method("clean", &GodotPhoto::clean);
             };
     };
