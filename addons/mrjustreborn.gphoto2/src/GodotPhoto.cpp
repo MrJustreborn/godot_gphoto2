@@ -1,21 +1,21 @@
-#include "test.hpp"
+#include "GodotPhoto.hpp"
 
 using namespace godot;
 
 GodotPhoto::GodotPhoto() {
-    printf("gdexample init\n");
+    printf("GodotPhoto start\n");
     context = gp_context_new();
+    gp_list_new(&list);
 }
 
 GodotPhoto::~GodotPhoto() {
-    printf("gdexample removed\n");
+    printf("GodotPhoto stop\n");
+    clean();
     gp_context_unref(context);
     gp_list_free(list);
 }
 
 Array GodotPhoto::test() {
-    gp_list_new(&list);
-
     gp_list_reset(list);
     int count = gp_camera_autodetect(list, context);
     if (count < GP_OK) {
