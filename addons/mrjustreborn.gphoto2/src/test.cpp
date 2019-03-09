@@ -2,18 +2,18 @@
 
 using namespace godot;
 
-gdexample::gdexample() {
+GodotPhoto::GodotPhoto() {
     printf("gdexample init\n");
     context = gp_context_new();
 }
 
-gdexample::~gdexample() {
+GodotPhoto::~GodotPhoto() {
     printf("gdexample removed\n");
     gp_context_unref(context);
     gp_list_free(list);
 }
 
-Array gdexample::test() {
+Array GodotPhoto::test() {
     gp_list_new(&list);
 
     gp_list_reset(list);
@@ -38,7 +38,7 @@ Array gdexample::test() {
     return arr;
 }
 
-Ref<Image> gdexample::getImg() {
+Ref<Image> GodotPhoto::getImg() {
     int size = 512;
 
     if (lastImage.is_valid()) {
@@ -63,7 +63,7 @@ Ref<Image> gdexample::getImg() {
     return lastImage;
 }
 
-void gdexample::clean() {
+void GodotPhoto::clean() {
     if (lastImage.is_valid()) {
         lastImage.unref();
     }

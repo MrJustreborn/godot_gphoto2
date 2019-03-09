@@ -7,12 +7,12 @@
 
 namespace godot {
 
-    class gdexample : public godot::GodotScript<Reference> {
-        GODOT_CLASS(gdexample)
+    class GodotPhoto : public godot::GodotScript<Reference> {
+        GODOT_CLASS(GodotPhoto)
 
         public:
-            gdexample();
-            ~gdexample();
+            GodotPhoto();
+            ~GodotPhoto();
 
             Array test();
             Ref<Image> getImg();
@@ -26,9 +26,9 @@ namespace godot {
         
         public:
             static void _register_methods() {
-                register_method("test", &gdexample::test);
-                register_method("getImg", &gdexample::getImg);
-                register_method("clean", &gdexample::clean);
+                register_method("test", &GodotPhoto::test);
+                register_method("getImg", &GodotPhoto::getImg);
+                register_method("clean", &GodotPhoto::clean);
             };
     };
 
