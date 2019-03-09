@@ -20,7 +20,7 @@ namespace godot {
             Ref<Image> capture(int ptr);
 
             void auto_focus(bool on);
-            void clean();
+            void reset();
             void setUp();
         
         private:
@@ -49,7 +49,7 @@ namespace godot {
                 register_method("capture_preview", &GodotPhoto::capture_preview);
                 register_method("capture", &GodotPhoto::capture);
                 register_method("auto_focus", &GodotPhoto::auto_focus);
-                register_method("clean", &GodotPhoto::clean);
+                register_method("reset", &GodotPhoto::reset);
             };
     };
 

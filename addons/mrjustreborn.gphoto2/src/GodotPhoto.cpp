@@ -14,7 +14,7 @@ GodotPhoto::GodotPhoto() {
 
 GodotPhoto::~GodotPhoto() {
     printf("GodotPhoto stop\n");
-    clean();
+    reset();
 }
 
 Array GodotPhoto::get_connected_cameras() {
@@ -87,7 +87,7 @@ void GodotPhoto::auto_focus(bool on) {
     camera_auto_focus(camera, context, on ? 1 : 0);
 }
 
-void GodotPhoto::clean() {
+void GodotPhoto::reset() {
     if (lastImage.is_valid()) {
         lastImage.unref();
     }
@@ -120,7 +120,7 @@ int GodotPhoto::setUpCamera(int ptr) {
     int count = gp_list_count(list);
     if (ptr > count-1 || ptr < 0) {
         printf("Unknow camera: %i!\n", ptr);
-        clean();
+        reset();
     } else {
         if (ptr != lastId) {
             const char *name, *value;
@@ -129,7 +129,7 @@ int GodotPhoto::setUpCamera(int ptr) {
             printf("Try to open: %s on %s\n", name, value);
             int ret = open_camera(&camera, name, value, context);
             if (ret < GP_OK) {
-                clean();
+                reset();
                 printf("Could not open: %s on %s\n", name, value);
                 return ret;
             }
