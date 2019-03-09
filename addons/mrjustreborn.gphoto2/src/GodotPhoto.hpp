@@ -19,6 +19,7 @@ namespace godot {
             Ref<Image> capture_preview(int ptr);
             Ref<Image> capture(int ptr);
 
+            void auto_focus(bool on);
             void clean();
             void setUp();
         
@@ -39,12 +40,15 @@ namespace godot {
             void capture_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size);
             void capture_preview_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size);
             int setUpCamera(int prt);
+            int camera_auto_focus(Camera *camera, GPContext *context, int onoff);
+            int lookup_widget(CameraWidget*widget, const char *key, CameraWidget **child);
         
         public:
             static void _register_methods() {
                 register_method("get_connected_cameras", &GodotPhoto::get_connected_cameras);
                 register_method("capture_preview", &GodotPhoto::capture_preview);
                 register_method("capture", &GodotPhoto::capture);
+                register_method("auto_focus", &GodotPhoto::auto_focus);
                 register_method("clean", &GodotPhoto::clean);
             };
     };

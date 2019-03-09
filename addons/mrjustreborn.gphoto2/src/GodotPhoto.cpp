@@ -83,6 +83,10 @@ Ref<Image> GodotPhoto::capture_preview(int ptr) {
     return lastImage;
 }
 
+void GodotPhoto::auto_focus(bool on) {
+    camera_auto_focus(camera, context, on ? 1 : 0);
+}
+
 void GodotPhoto::clean() {
     if (lastImage.is_valid()) {
         lastImage.unref();
@@ -133,6 +137,69 @@ int GodotPhoto::setUpCamera(int ptr) {
         }
     }
     return -1;
+}
+
+int GodotPhoto::camera_auto_focus(Camera *camera, GPContext *context, int onoff) {
+    CameraWidget		*widget = NULL, *child = NULL;
+    CameraWidgetType	type;
+    int			ret,val;
+
+    ret = gp_camera_get_config (camera, &widget, context);
+    if (ret < GP_OK) {
+        fprintf (stderr, "camera_get_config failed: %d\n", ret);
+        return ret;
+    }
+    ret = lookup_widget (widget, "autofocusdrive", &child);
+    if (ret < GP_OK) {
+        fprintf (stderr, "lookup 'autofocusdrive' failed: %d\n", ret);
+        goto out;
+    }
+
+    /* check that this is a toggle */
+    ret = gp_widget_get_type (child, &type);
+    if (ret < GP_OK) {
+        fprintf (stderr, "widget get type failed: %d\n", ret);
+        goto out;
+    }
+    switch (type) {
+        case GP_WIDGET_TOGGLE:
+        break;
+    default:
+        fprintf (stderr, "widget has bad type %d\n", type);
+        ret = GP_ERROR_BAD_PARAMETERS;
+        goto out;
+    }
+
+    ret = gp_widget_get_value (child, &val);
+    if (ret < GP_OK) {
+        fprintf (stderr, "could not get widget value: %d\n", ret);
+        goto out;
+    }
+
+    val = onoff;
+
+    ret = gp_widget_set_value (child, &val);
+    if (ret < GP_OK) {
+        fprintf (stderr, "could not set widget value to 1: %d\n", ret);
+        goto out;
+    }
+
+    ret = gp_camera_set_config (camera, widget, context);
+    if (ret < GP_OK) {
+        fprintf (stderr, "could not set config tree to autofocus: %d\n", ret);
+        goto out;
+    }
+    out:
+    gp_widget_free (widget);
+    return ret;
+}
+
+int GodotPhoto::lookup_widget(CameraWidget*widget, const char *key, CameraWidget **child) {
+    int ret;
+    ret = gp_widget_get_child_by_name (widget, key, child);
+    if (ret < GP_OK)
+        ret = gp_widget_get_child_by_label (widget, key, child);
+    return ret;
 }
 
 void GodotPhoto::capture_preview_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size) {
