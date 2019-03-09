@@ -38,6 +38,7 @@ namespace godot {
             int open_camera(Camera ** camera, const char *model, const char *port, GPContext *context);
             void capture_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size);
             void capture_preview_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size);
+            int setUpCamera(int prt);
         
         public:
             static void _register_methods() {

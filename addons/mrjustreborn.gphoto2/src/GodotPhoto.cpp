@@ -42,41 +42,11 @@ Array GodotPhoto::get_connected_cameras() {
 }
 
 Ref<Image> GodotPhoto::capture(int ptr) {
-    setUp();
-    return capture_preview(ptr);
-}
-
-Ref<Image> GodotPhoto::capture_preview(int ptr) {
-    setUp();
-    int count = gp_list_count(list);
-    if (ptr > count-1 || ptr < 0) {
-        printf("Unknow camera!");
-        clean();
-        return lastImage;
-    } else {
-        if (ptr != lastId) {
-            const char *name, *value;
-            gp_list_get_name(list, 0, &name);
-            gp_list_get_value(list, 0, &value);
-            printf("Try to open: %s on %s\n", name, value);
-            int ret = open_camera(&camera, name, value, context);
-            if (ret < GP_OK) {
-                clean();
-                printf("Could not open: %s on %s\n", name, value);
-                return lastImage;
-            }
-            lastId = ptr;
-        }
-    }
+    setUpCamera(ptr);
 
     char *data;
-    unsigned long size2;
-    capture_preview_to_memory(camera, context,(const char**)&data, &size2);
-
-    printf("SIZE: %d\n", size2);
-    // printf("SIZE: %s\n", &data[0]);
-
-    int size = 512;
+    unsigned long size;
+    capture_to_memory(camera, context,(const char**)&data, &size);
 
     if (lastImage.is_valid()) {
         lastImage.unref();
@@ -84,24 +54,31 @@ Ref<Image> GodotPhoto::capture_preview(int ptr) {
     lastImage.instance();
 
     PoolByteArray bArr;
-    for (int i=0; i<size2; i++) {
-        bArr.append(atoi(data));
+    for (int i=0; i<size; i++) {
+        bArr.append((*(data + i)));
     }
     lastImage->load_jpg_from_buffer(bArr);
 
-    // lastImage.ptr()->create(size, size, false, Image::FORMAT_RGBA8);
-    // lastImage.ptr()->lock();
-    // for(int y = 0; y < size; y++){
-    //     for(int x=0; x<size; x++){
-    //         int i = 4*(x+y*size);
-    //         float r = 0.5;
-    //         float g = 0.5;
-    //         float b = 0.5;
-    //         float a = 0.5;
-    //         lastImage.ptr()->set_pixel(x, y, Color(r, g, b, a));
-    //     }
-    // }
-    // lastImage.ptr()->unlock();
+    return lastImage;
+}
+
+Ref<Image> GodotPhoto::capture_preview(int ptr) {
+    setUpCamera(ptr);
+
+    char *data;
+    unsigned long size;
+    capture_preview_to_memory(camera, context,(const char**)&data, &size);
+
+    if (lastImage.is_valid()) {
+        lastImage.unref();
+    }
+    lastImage.instance();
+
+    PoolByteArray bArr;
+    for (int i=0; i<size; i++) {
+        bArr.append((*(data + i)));
+    }
+    lastImage->load_jpg_from_buffer(bArr);
 
     return lastImage;
 }
@@ -132,6 +109,30 @@ void GodotPhoto::setUp() {
 
         isSetUp = true;
     }
+}
+
+int GodotPhoto::setUpCamera(int ptr) {
+    setUp();
+    int count = gp_list_count(list);
+    if (ptr > count-1 || ptr < 0) {
+        printf("Unknow camera: %i!\n", ptr);
+        clean();
+    } else {
+        if (ptr != lastId) {
+            const char *name, *value;
+            gp_list_get_name(list, ptr, &name);
+            gp_list_get_value(list, ptr, &value);
+            printf("Try to open: %s on %s\n", name, value);
+            int ret = open_camera(&camera, name, value, context);
+            if (ret < GP_OK) {
+                clean();
+                printf("Could not open: %s on %s\n", name, value);
+                return ret;
+            }
+            lastId = ptr;
+        }
+    }
+    return -1;
 }
 
 void GodotPhoto::capture_preview_to_memory(Camera *camera, GPContext *context, const char **ptr, unsigned long int *size) {
