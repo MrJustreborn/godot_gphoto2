@@ -14,7 +14,7 @@ namespace godot {
             gdexample();
             ~gdexample();
 
-            float test();
+            Array test();
             Ref<Image> getImg();
             void clean();
         
@@ -22,7 +22,7 @@ namespace godot {
             GPContext *context;
             CameraList	*list;
 
-            Ref<Image> ref;
+            Ref<Image> lastImage;
         
         public:
             static void _register_methods() {
@@ -30,13 +30,6 @@ namespace godot {
                 register_method("getImg", &gdexample::getImg);
                 register_method("clean", &gdexample::clean);
             };
-    };
-
-    class Test {
-        public:
-            Test();
-            ~Test();
-            void pr();
     };
 
 }

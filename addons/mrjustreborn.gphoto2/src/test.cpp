@@ -4,17 +4,16 @@ using namespace godot;
 
 gdexample::gdexample() {
     printf("gdexample init\n");
-    // context = gp_context_new();
-    // arr = PoolByteArray();
+    context = gp_context_new();
 }
 
 gdexample::~gdexample() {
     printf("gdexample removed\n");
-    // gp_context_unref(context);
-    // gp_list_free(list);
+    gp_context_unref(context);
+    gp_list_free(list);
 }
 
-float gdexample::test() {
+Array gdexample::test() {
     gp_list_new(&list);
 
     gp_list_reset(list);
@@ -25,27 +24,30 @@ float gdexample::test() {
         printf("Number of cameras: %d\n", count);
     }
 
+    Array arr;
     const char	*name, *value;
     for (int i = 0; i < count; i++) {
         gp_list_get_name(list, i, &name);
         gp_list_get_value(list, i, &value);
-
+        
+        arr.append(Dictionary::make("name", name, "value", value));
         printf("Camera: %d\n \t%s\n \t%s\n", i, name, value);
     }
 
-    return count;
+
+    return arr;
 }
 
 Ref<Image> gdexample::getImg() {
     int size = 512;
 
-    if (ref.is_valid()) {
-        ref.unref();
+    if (lastImage.is_valid()) {
+        lastImage.unref();
     }
-    ref.instance();
+    lastImage.instance();
 
-    ref.ptr()->create(size, size, false, Image::FORMAT_RGBA8);
-    ref.ptr()->lock();
+    lastImage.ptr()->create(size, size, false, Image::FORMAT_RGBA8);
+    lastImage.ptr()->lock();
     for(int y = 0; y < size; y++){
         for(int x=0; x<size; x++){
             int i = 4*(x+y*size);
@@ -53,29 +55,16 @@ Ref<Image> gdexample::getImg() {
             float g = 0.5;
             float b = 0.5;
             float a = 0.5;
-            ref.ptr()->set_pixel(x, y, Color(r, g, b, a));
+            lastImage.ptr()->set_pixel(x, y, Color(r, g, b, a));
         }
     }
-    ref.ptr()->unlock();
+    lastImage.ptr()->unlock();
 
-    Test t;
-    t.pr();
-
-    return ref;
+    return lastImage;
 }
 
 void gdexample::clean() {
-    if (ref.is_valid()) {
-        ref.unref();
+    if (lastImage.is_valid()) {
+        lastImage.unref();
     }
-}
-
-Test::Test() {
-    printf("test init\n");
-}
-Test::~Test() {
-    printf("test removed\n");
-}
-void Test::pr() {
-    printf("Test printer!\n");
 }
