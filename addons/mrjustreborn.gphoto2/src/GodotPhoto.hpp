@@ -20,9 +20,11 @@ namespace godot {
             Ref<Image> capture(int ptr);
 
             void clean();
+            void setUp();
         
         private:
             int lastId;
+            bool isSetUp;
 
             GPContext *context;
             CameraList	*list;

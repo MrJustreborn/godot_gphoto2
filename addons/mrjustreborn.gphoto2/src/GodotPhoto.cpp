@@ -7,26 +7,18 @@ GodotPhoto::GodotPhoto() {
     abilities = NULL;
     portinfolist = NULL;
     lastId = -1;
+    isSetUp = false;
 
-    context = gp_context_new();
-    gp_list_new(&list);
-    gp_camera_new(&camera);
+    setUp();
 }
 
 GodotPhoto::~GodotPhoto() {
     printf("GodotPhoto stop\n");
     clean();
-
-    gp_camera_exit(camera, context);
-    gp_list_free(list);
-    gp_context_unref(context);
-
-    abilities = NULL;
-    portinfolist = NULL;
-    lastId = -1;
 }
 
 Array GodotPhoto::get_connected_cameras() {
+    setUp();
     Array _cameras;
 
     gp_list_reset(list);
@@ -50,10 +42,12 @@ Array GodotPhoto::get_connected_cameras() {
 }
 
 Ref<Image> GodotPhoto::capture(int ptr) {
+    setUp();
     return capture_preview(ptr);
 }
 
 Ref<Image> GodotPhoto::capture_preview(int ptr) {
+    setUp();
     int count = gp_list_count(list);
     if (ptr > count-1 || ptr < 0) {
         printf("Unknow camera!");
@@ -115,6 +109,28 @@ Ref<Image> GodotPhoto::capture_preview(int ptr) {
 void GodotPhoto::clean() {
     if (lastImage.is_valid()) {
         lastImage.unref();
+    }
+
+    if (isSetUp) {
+        gp_camera_exit(camera, context);
+        gp_list_free(list);
+        gp_context_unref(context);
+
+        abilities = NULL;
+        portinfolist = NULL;
+        lastId = -1;
+
+        isSetUp = false;
+    }
+}
+
+void GodotPhoto::setUp() {
+    if (!isSetUp) {
+        context = gp_context_new();
+        gp_list_new(&list);
+        gp_camera_new(&camera);
+
+        isSetUp = true;
     }
 }
 
